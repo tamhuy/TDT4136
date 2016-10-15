@@ -129,7 +129,69 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+        print self.depth
+        print gameState.getNumAgents()
+        #
+        # print gameState.getLegalActions()[0]
+        # print gameState.generateSuccessor(0,"Left").getLegalActions(0)
+        # print gameState.generateSuccessor(0,"Left").generateSuccessor(1,"Left").getLegalActions(1)
+        # print scoreEvaluationFunction(gameState.generateSuccessor(0,"Left").generateSuccessor(1,"Left"))
+        # test = gameState.generateSuccessor(0,"Left").generateSuccessor(0,"Left").generateSuccessor(0,"Left").generateSuccessor(0,"Left")[0]
+        # print self.evaluationFunction
+        # print gameState.getScore()
+        v, action = self.maxValue(gameState, self.depth)
+        print v, action
+        print v[1]
+        return action
+
         util.raiseNotDefined()
+
+    # def minimaxDecision(self, gameState):
+    def maxValue(self, gameState, depth):
+        depthtest = depth
+        if depthtest == 0:
+            return scoreEvaluationFunction(gameState)
+        v = float('-inf')
+        depthtest -= 1
+        action = None
+        for a in gameState.getLegalActions():
+            v1 = self.minValue(gameState.generateSuccessor(0, a), depthtest)
+            temp = max(v, v1)
+            if temp > v:
+                v = temp
+                action = a
+                # print action
+                # print v
+        if len(gameState.getLegalActions()) == 1:
+            action = gameState.getLegalActions()[0]
+        return v, action
+
+    def minValue(self, gameState, depth):
+        depthtest = depth
+        if depthtest == 0:
+            return scoreEvaluationFunction(gameState)
+        v = float('inf')
+        depthtest -= 1
+        action = None
+
+        for a in gameState.getLegalActions():
+            v1 = self.maxValue(gameState.generateSuccessor(1, a), depthtest)
+            temp = min(v, v1)
+            # print v
+            if temp < v:
+                v = temp
+                action = a
+                # print action
+                # print v
+        if len(gameState.getLegalActions()) == 1:
+            action = gameState.getLegalActions()[0]
+        return v, action
+
+
+
+
+
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
