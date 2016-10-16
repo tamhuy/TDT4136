@@ -155,7 +155,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         utility = float('-inf')
         action = None
         for a in gameState.getLegalActions():
-            test = self.minValue(gameState.generateSuccessor(0, a), depth - 1)
+            test = self.minimaxDecision(gameState.generateSuccessor(0, a), depth - 1)
             if test > utility:
                 utility = test
                 action = a
