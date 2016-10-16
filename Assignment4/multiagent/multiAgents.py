@@ -129,76 +129,17 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        """
-        function MINIMAX-DECISION(state) return an action
-            return argmax MIN-VALUE(RESULT(state, a))
-
-        function MAX-Value(state) retirms a utility value
-            if TERMINAL-TEST(state) the return UTILITY(state)
-            v = - inf
-            for each a in ACTIONS(state) do
-                v = MAX(v, MIN-VALUE(RESULT(s,a)))
-            return v
-
-        function MIN-VALUE(state) return a utility value
-            if TERMINAL-TEST(state) then return UTILITY(state)
-            v = inf
-            for each a in ACTIONS(state) do
-                v = MIN(v, MAX-VALUE(RESULT(s,a)))
-            return v
-        """
-        # print "-" * 50
-        # print "Depth: ", self.depth
-        # print "Total Agents: ", gameState.getNumAgents()
-
-        # print gameState.getLegalActions()[0]
-        # print gameState.generateSuccessor(1,"Left").getLegalActions(0)
-        # print gameState.generateSuccessor(0,"Left").generateSuccessor(1,"Left").getLegalActions(1)
-        # print scoreEvaluationFunction(gameState.generateSuccessor(0,"Left").generateSuccessor(1,"Left"))
-        # test = gameState.generateSuccessor(0,"Left").generateSuccessor(0,"Left").generateSuccessor(0,"Left").generateSuccessor(0,"Left")[0]
-        # print self.evaluationFunction
-        # print gameState.getScore()
-        # v, action = self.maxValue(gameState, self.depth)
-        # print v, action
-        # print v[1]
-        # return action
 
         minimaxValue = self.minimaxDecision(gameState, self.depth*gameState.getNumAgents())
-        # print "Minimax value: ", minimaxValue
         return minimaxValue[1]
-        # return None
-
         util.raiseNotDefined()
 
-#self.depth = 3
-#numagents = 2
-    #totalDepth = 2*3 = 6
-#pacmanTurn = 6/2 =3
-#ghostTurn = 5/2 = 2.5
-#pacmanTurn = 4/2 = 2
-#ghostTurn = 3/2 = 1.5
-
-#pacmanTurn = 0/2 = 0
-# ghostTurn = 1/2 = .5
-
-
-    def asd(self, gameState, depth):
-        utility = float('-inf')
-        actions = gameState.getLegalActions
-        index = -1
-        for i in range(len(gameState.getLegalActions())):
-            if self.minValue(gameState.generateSuccessor(0, actions[i]), depth)[0] > utility:
-                utility = self.minValue(gameState.generateSuccessor(0, actions[i]), depth)[0]
-                index = i
-        return actions[index]
 
     def minimaxDecision(self, gameState, depth):
         if depth == 0 or gameState.isWin() or gameState.isLose():
             return (scoreEvaluationFunction(gameState), None)
-
         if (depth % gameState.getNumAgents()) == 0:
             return self.maxValue(gameState, depth)
-
         else:
             return self.minValue(gameState, depth)
 
