@@ -147,9 +147,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 v = MIN(v, MAX-VALUE(RESULT(s,a)))
             return v
         """
-        print "-" * 50
-        print "Depth: ", self.depth
-        print "Total Agents: ", gameState.getNumAgents()
+        # print "-" * 50
+        # print "Depth: ", self.depth
+        # print "Total Agents: ", gameState.getNumAgents()
         #
         # print gameState.getLegalActions()[0]
         # print gameState.generateSuccessor(1,"Left").getLegalActions(0)
@@ -163,8 +163,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # print v[1]
         # return action
 
-        minimaxValue = self.maxValue(gameState, self.depth)
-        print "Minimax value: ", minimaxValue
+        minimaxValue = self.maxValue(gameState, self.depth*gameState.getNumAgents())
+        # print "Minimax value: ", minimaxValue
         return minimaxValue[1]
 
         util.raiseNotDefined()
@@ -172,11 +172,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def minimaxDecision(self, gameState, depth):
         gameState.getNumAgents()
 
+
     def maxValue(self, gameState, depth):
-        print "maxValue"
-        print gameState.getNumAgents()
+        # print "maxValue"
         if depth == 0 or gameState.isWin() or gameState.isLose():
-            print scoreEvaluationFunction(gameState)
+            # print scoreEvaluationFunction(gameState)
             return (scoreEvaluationFunction(gameState), None)
         v = (float('-inf'), None)
 
@@ -185,14 +185,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
             #v = max(v, self.minValue(gameState.generateSuccessor(0, a), depth - 1))
             if v1[0] > v[0]:
                 v = (v1[0], a)
-            print "maxv: ", v
+            # print "maxv: ", v
         return v
 
     def minValue(self, gameState, depth):
-        print "minValue"
-        print gameState.getNumAgents()
+        # print "minValue"
         if depth == 0 or gameState.isWin() or gameState.isLose():
-            print scoreEvaluationFunction(gameState)
+            # print scoreEvaluationFunction(gameState)
             return (scoreEvaluationFunction(gameState), None)
         v = (float('inf'), None)
         for a in gameState.getLegalActions(1):
@@ -200,7 +199,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             #v = min(v, self.maxValue(gameState.generateSuccessor(1, a), depth - 1))
             if v1[0] < v[0]:
                 v = (v1[0], a)
-            print "minv: ", v
+            # print "minv: ", v
         return v
 
     # # def minimaxDecision(self, gameState):
