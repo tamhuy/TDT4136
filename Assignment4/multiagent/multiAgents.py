@@ -147,6 +147,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 v = MIN(v, MAX-VALUE(RESULT(s,a)))
             return v
         """
+        print "-" * 50
         print "Depth: ", self.depth
         print "Total Agents: ", gameState.getNumAgents()
         #
@@ -161,36 +162,46 @@ class MinimaxAgent(MultiAgentSearchAgent):
         # print v, action
         # print v[1]
         # return action
-        asd = self.maxValue(gameState, self.depth)
-        print "Minimax value: ", asd
-        return asd[1]
+
+        minimaxValue = self.maxValue(gameState, self.depth)
+        print "Minimax value: ", minimaxValue
+        return minimaxValue[1]
+
         util.raiseNotDefined()
 
+    def minimaxDecision(self, gameState, depth):
+        gameState.getNumAgents()
+
     def maxValue(self, gameState, depth):
-        if depth == 0:
-            return scoreEvaluationFunction(gameState)
-        v = float('-inf')
+        print "maxValue"
+        print gameState.getNumAgents()
+        if depth == 0 or gameState.isWin() or gameState.isLose():
+            print scoreEvaluationFunction(gameState)
+            return (scoreEvaluationFunction(gameState), None)
+        v = (float('-inf'), None)
 
         for a in gameState.getLegalActions(0):
             v1 = self.minValue(gameState.generateSuccessor(0, a), depth - 1)
-            print v1
-            if v1 > v:
-                v = v1
-                action = a
-        return v, action
+            #v = max(v, self.minValue(gameState.generateSuccessor(0, a), depth - 1))
+            if v1[0] > v[0]:
+                v = (v1[0], a)
+            print "maxv: ", v
+        return v
 
     def minValue(self, gameState, depth):
-        if depth == 0:
-            return scoreEvaluationFunction(gameState)
-        v = float('inf')
-
+        print "minValue"
+        print gameState.getNumAgents()
+        if depth == 0 or gameState.isWin() or gameState.isLose():
+            print scoreEvaluationFunction(gameState)
+            return (scoreEvaluationFunction(gameState), None)
+        v = (float('inf'), None)
         for a in gameState.getLegalActions(1):
             v1 = self.maxValue(gameState.generateSuccessor(1, a), depth - 1)
-            print v1
-            if v1 < v:
-                v = v1
-                action = a
-        return v, action
+            #v = min(v, self.maxValue(gameState.generateSuccessor(1, a), depth - 1))
+            if v1[0] < v[0]:
+                v = (v1[0], a)
+            print "minv: ", v
+        return v
 
     # # def minimaxDecision(self, gameState):
     # def maxValue(self, gameState, depth):
