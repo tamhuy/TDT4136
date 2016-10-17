@@ -129,8 +129,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+
         return self.minimaxDecision(gameState, self.depth*gameState.getNumAgents())
 
+    # minimaxDecision returns the action Pacman should take
     def minimaxDecision(self, gameState, depth):
         utility = float('-inf')
         action = None
@@ -141,22 +143,29 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 action = a
         return action
 
+    # decidePlayer chooses if maxValue or minValue should run depending on which agent is the current one
     def decidePlayer(self, gameState, depth):
         if depth == 0 or gameState.isWin() or gameState.isLose():
             return scoreEvaluationFunction(gameState)
         if (depth % gameState.getNumAgents()) == 0:
+            # Pacman's turn
             return self.maxValue(gameState, depth)
         else:
+            # Ghost's turn
             return self.minValue(gameState, depth)
 
+    # maxValue returns the max value Pacman can get
     def maxValue(self, gameState, depth):
         v = float('-inf')
         for a in gameState.getLegalActions(0):
             v = max(v, self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1))
         return v
 
+    # minValue returns the min value the ghosts can get
     def minValue(self, gameState, depth):
         v = float('inf')
+
+        # the if-else sentence determines if the ghost is ghost 1 or ghost 2
         if depth % gameState.getNumAgents() == 2:
             for a in gameState.getLegalActions(1):
                 v = min(v, self.decidePlayer(gameState.generateSuccessor(1, a), depth - 1))
@@ -178,6 +187,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         return self.alphaBetaSearch(gameState, self.depth*gameState.getNumAgents())
 
+    # alphaBetaSearch returns the action Pacman should take
     def alphaBetaSearch(self, gameState, depth):
         utility = float('-inf')
         alpha = float('-inf')
@@ -191,6 +201,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             alpha = max(alpha, utility)
         return action
 
+    # decidePlayer chooses if maxValue or minValue should run depending on which agent is the current one
     def decidePlayer(self, gameState, depth, alpha, beta):
         if depth == 0 or gameState.isWin() or gameState.isLose():
             return scoreEvaluationFunction(gameState)
@@ -199,6 +210,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         else:
             return self.minValue(gameState, depth, alpha, beta)
 
+    # maxValue returns the max value Pacman can get
     def maxValue(self, gameState, depth, alpha, beta):
         v = float('-inf')
         for a in gameState.getLegalActions(0):
@@ -208,8 +220,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 return v
         return v
 
+    # minValue returns the min value the ghosts can get
     def minValue(self, gameState, depth, alpha, beta):
         v = float('inf')
+
+        # the if-else sentence determines if the ghost is ghost 1 or ghost 2
         if depth % gameState.getNumAgents() == 2:
             for a in gameState.getLegalActions(1):
                 v = min(v, self.decidePlayer(gameState.generateSuccessor(1, a), depth - 1, alpha, beta))
