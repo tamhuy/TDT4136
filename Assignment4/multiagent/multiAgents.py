@@ -129,54 +129,40 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-
-        minimaxValue = self.minimaxDecision(gameState, self.depth*gameState.getNumAgents())
-        return minimaxValue[1]
-        util.raiseNotDefined()
-
+        return self.minimaxDecision(gameState, self.depth*gameState.getNumAgents())
 
     def minimaxDecision(self, gameState, depth):
+        utility = float('-inf')
+        action = None
+        for a in gameState.getLegalActions():
+            test = self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1)
+            if test > utility:
+                utility = test
+                action = a
+        return action
+
+    def decidePlayer(self, gameState, depth):
         if depth == 0 or gameState.isWin() or gameState.isLose():
-            return (scoreEvaluationFunction(gameState), None)
+            return scoreEvaluationFunction(gameState)
         if (depth % gameState.getNumAgents()) == 0:
             return self.maxValue(gameState, depth)
         else:
             return self.minValue(gameState, depth)
 
     def maxValue(self, gameState, depth):
-        # if depth == 0 or gameState.isWin() or gameState.isLose():
-        #     print scoreEvaluationFunction(gameState)
-        #     return (scoreEvaluationFunction(gameState), None)
-        # if len(gameState.getLegalActions(0)) == 0:
-        #     return scoreEvaluationFunction(gameState)
-        v = (float('-inf'), None)
-
+        v = float('-inf')
         for a in gameState.getLegalActions(0):
-            v1 = self.minimaxDecision(gameState.generateSuccessor(0, a), depth - 1)
-            # v1 = self.minValue(gameState.generateSuccessor(0, a), depth - 1)
-            if v1[0] > v[0]:
-                v = (v1[0], a)
+            v = max(v, self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1))
         return v
 
     def minValue(self, gameState, depth):
-        # if depth == 0 or gameState.isWin() or gameState.isLose():
-        #     return (scoreEvaluationFunction(gameState), None)
-        # if len(gameState.getLegalActions(0)) == 0:
-        #     return scoreEvaluationFunction(gameState)
-        v = (float('inf'), None)
-
+        v = float('inf')
         if depth % gameState.getNumAgents() == 2:
-            for a in gameState.getLegalActions((1)):
-                v1 = self.minimaxDecision(gameState.generateSuccessor(1, a), depth - 1)
-                # v1 = self.maxValue(gameState.generateSuccessor(1, a), depth - 1)
-                if v1[0] < v[0]:
-                    v = (v1[0], a)
+            for a in gameState.getLegalActions(1):
+                v = min(v, self.decidePlayer(gameState.generateSuccessor(1, a), depth - 1))
         else:
-            for a in gameState.getLegalActions((2)):
-                v1 = self.minimaxDecision(gameState.generateSuccessor(2, a), depth - 1)
-                # v1 = self.maxValue(gameState.generateSuccessor(1, a), depth - 1)
-                if v1[0] < v[0]:
-                    v = (v1[0], a)
+            for a in gameState.getLegalActions(2):
+                v = min(v, self.decidePlayer(gameState.generateSuccessor(2, a), depth - 1))
         return v
 
 
@@ -190,7 +176,55 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.alphaBetaSearch(gameState, self.depth*gameState.getNumAgents())
+
+    def alphaBetaSearch(self, gameState, depth):
+        utility = float('-inf')
+        alpha = float('-inf')
+        beta = float('inf')
+        action = None
+        for a in gameState.getLegalActions():
+            test = self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1, alpha, beta)
+            if test > utility:
+                utility = test
+                action = a
+            alpha = max(alpha, utility)
+        return action
+
+    def decidePlayer(self, gameState, depth, alpha, beta):
+        if depth == 0 or gameState.isWin() or gameState.isLose():
+            return scoreEvaluationFunction(gameState)
+        if (depth % gameState.getNumAgents()) == 0:
+            return self.maxValue(gameState, depth, alpha, beta)
+        else:
+            return self.minValue(gameState, depth, alpha, beta)
+
+    def maxValue(self, gameState, depth, alpha, beta):
+        v = float('-inf')
+        for a in gameState.getLegalActions(0):
+            v = max(v, self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1, alpha, beta))
+            alpha = max(alpha, v)
+            if v > beta:
+                return v
+        return v
+
+    def minValue(self, gameState, depth, alpha, beta):
+        v = float('inf')
+        if depth % gameState.getNumAgents() == 2:
+            for a in gameState.getLegalActions(1):
+                v = min(v, self.decidePlayer(gameState.generateSuccessor(1, a), depth - 1, alpha, beta))
+                beta = min(beta, v)
+                if v < alpha:
+                    return v
+        else:
+            for a in gameState.getLegalActions(2):
+                v = min(v, self.decidePlayer(gameState.generateSuccessor(2, a), depth - 1, alpha, beta))
+                beta = min(beta, v)
+                if v < alpha:
+                    return v
+        return v
+
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
