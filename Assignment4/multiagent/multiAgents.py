@@ -147,21 +147,21 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 v = MIN(v, MAX-VALUE(RESULT(s,a)))
             return v
         """
-        minimaxValue = self.asd(gameState, self.depth*gameState.getNumAgents())
+        minimaxValue = self.minimaxDecision(gameState, self.depth*gameState.getNumAgents())
         return minimaxValue
         util.raiseNotDefined()
 
-    def asd(self, gameState, depth):
+    def minimaxDecision(self, gameState, depth):
         utility = float('-inf')
         action = None
         for a in gameState.getLegalActions():
-            test = self.minimaxDecision(gameState.generateSuccessor(0, a), depth - 1)
+            test = self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1)
             if test > utility:
                 utility = test
                 action = a
         return action
 
-    def minimaxDecision(self, gameState, depth):
+    def decidePlayer(self, gameState, depth):
         if depth == 0 or gameState.isWin() or gameState.isLose():
             return scoreEvaluationFunction(gameState)
         if (depth % gameState.getNumAgents()) == 0:
@@ -172,17 +172,17 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def maxValue(self, gameState, depth):
         v = float('-inf')
         for a in gameState.getLegalActions(0):
-            v = max(v, self.minimaxDecision(gameState.generateSuccessor(0, a), depth - 1))
+            v = max(v, self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1))
         return v
 
     def minValue(self, gameState, depth):
         v = float('inf')
         if depth % gameState.getNumAgents() == 2:
             for a in gameState.getLegalActions(1):
-                v = min(v, self.minimaxDecision(gameState.generateSuccessor(1, a), depth - 1))
+                v = min(v, self.decidePlayer(gameState.generateSuccessor(1, a), depth - 1))
         else:
             for a in gameState.getLegalActions(2):
-                v = min(v, self.minimaxDecision(gameState.generateSuccessor(2, a), depth - 1))
+                v = min(v, self.decidePlayer(gameState.generateSuccessor(2, a), depth - 1))
         return v
 
 
