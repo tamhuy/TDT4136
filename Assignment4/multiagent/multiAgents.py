@@ -129,27 +129,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        """
-        function MINIMAX-DECISION(state) return an action
-            return argmax MIN-VALUE(RESULT(state, a))
-
-        function MAX-Value(state) retirms a utility value
-            if TERMINAL-TEST(state) the return UTILITY(state)
-            v = - inf
-            for each a in ACTIONS(state) do
-                v = MAX(v, MIN-VALUE(RESULT(s,a)))
-            return v
-
-        function MIN-VALUE(state) return a utility value
-            if TERMINAL-TEST(state) then return UTILITY(state)
-            v = inf
-            for each a in ACTIONS(state) do
-                v = MIN(v, MAX-VALUE(RESULT(s,a)))
-            return v
-        """
-        minimaxValue = self.minimaxDecision(gameState, self.depth*gameState.getNumAgents())
-        return minimaxValue
-        util.raiseNotDefined()
+        return self.minimaxDecision(gameState, self.depth*gameState.getNumAgents())
 
     def minimaxDecision(self, gameState, depth):
         utility = float('-inf')
@@ -197,7 +177,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         return self.alphaBetaSearch(gameState, self.depth*gameState.getNumAgents())
-        util.raiseNotDefined()
 
     def alphaBetaSearch(self, gameState, depth):
         utility = float('-inf')
@@ -221,20 +200,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             return self.minValue(gameState, depth, alpha, beta)
 
     def maxValue(self, gameState, depth, alpha, beta):
-        if depth == 0 or gameState.isWin() or gameState.isLose():
-            return scoreEvaluationFunction(gameState)
         v = float('-inf')
         for a in gameState.getLegalActions(0):
             v = max(v, self.decidePlayer(gameState.generateSuccessor(0, a), depth - 1, alpha, beta))
             alpha = max(alpha, v)
             if v > beta:
                 return v
-
         return v
 
     def minValue(self, gameState, depth, alpha, beta):
-        if depth == 0 or gameState.isWin() or gameState.isLose():
-            return scoreEvaluationFunction(gameState)
         v = float('inf')
         if depth % gameState.getNumAgents() == 2:
             for a in gameState.getLegalActions(1):
