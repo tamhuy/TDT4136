@@ -14,6 +14,7 @@ class CSP:
         # self.constraints[i][j] is a list of legal value pairs for
         # the variable pair (i, j)
         self.constraints = {}
+        self.recursion = 0
 
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
@@ -110,7 +111,31 @@ class CSP:
         iterations of the loop.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        self.recursion += 1
+        print self.recursion
+        complete = True
+        for value in assignment:
+            if len(assignment[value]) != 1:
+                complete = False
+        if complete:
+            return assignment
+
+        var = self.select_unassigned_variable(assignment)
+
+        for value in assignment[var]:
+            assignment2 = copy.deepcopy(assignment)
+            assignment2[var] = [value]
+
+            if value in self.domains[var]:
+                # assignment[var].append(value)
+                inferences = self.inference(assignment2, self.get_all_arcs())
+                if inferences:
+                    # assignment.append(inferences)
+                    result = self.backtrack(assignment2)
+                    if result is not False:
+                        return result
+            # assignment.remove(value)
+        return False
 
     def select_unassigned_variable(self, assignment):
         """The function 'Select-Unassigned-Variable' from the pseudocode
@@ -119,7 +144,11 @@ class CSP:
         of legal values has a length greater than one.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        # print assignment
+        for value in assignment:
+            if len(assignment[value]) > 1:
+                return value
+
 
     def inference(self, assignment, queue):
         """The function 'AC-3' from the pseudocode in the textbook.
@@ -128,7 +157,40 @@ class CSP:
         is the initial queue of arcs that should be visited.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        # print "Domain: ", assignment.domains
+        # print assignment
+        # print "Queue: ", queue
+
+        # while queue:
+        #     i, j = queue.pop(0)
+        #     print "I, J: ", i, j
+        #     print "Pairs: ", self.get_all_possible_pairs(assignment.domains[i], assignment.domains[j])
+        #     print "Neighbouring arcs i: ", self.get_all_neighboring_arcs(i)
+        #     print "Neighbouring arcs j: ", self.get_all_neighboring_arcs(j)
+        while queue:
+            i, j = queue.pop(0)
+            # print self.get_all_possible_pairs(i,j)
+            # print "i, j: ", i, j
+            if self.revise(assignment, i, j):
+                # print "asdasda"
+                if len(assignment[i]) == 0:
+                    return False
+
+
+                for k in self.get_all_neighboring_arcs(i):
+                    # print "Neighbour", k
+                    # print "asd"
+                    print self.get_all_neighboring_arcs(i)
+                    if k == (i, j):
+                        continue
+                    queue.append(k)
+                    # for a in range(len(k)):
+                    #     if k[a] == j or k[a] == i:
+                    #         continue
+                    #     queue.append(k)
+                    #     print k
+        return True
+
 
     def revise(self, assignment, i, j):
         """The function 'Revise' from the pseudocode in the textbook.
@@ -140,7 +202,39 @@ class CSP:
         legal values in 'assignment'.
         """
         # TODO: IMPLEMENT THIS
-        pass
+        revised = False
+
+        # print "Constraints i: ", assignment.constraints[i][j]
+        for x in assignment[i]:
+            satisfied = False
+            for y in assignment[j]:
+                # print (x, y)
+                if (x, y) in self.constraints[i][j]:
+                    satisfied = True
+                    # print "test", (x, y)
+                    # assignment.domains[i].remove(x)
+                    # revised = True
+                    break
+            if not satisfied:
+                revised = True
+                assignment[i].remove(x)
+
+
+
+        # print assignment.domains[i]
+        #         print "y", assignment.domains[i]
+        #     print "x", assignment.domains[i]
+        # print assignment.domains[i]
+        # print "Constraints: ", self.constraints
+        # for x in assignment.domains[i]:
+        #     for y in assignment.domains[j]:
+        #         # Hvis det ikke finnes en y i assignment.domains[j] som tilfredstiller constraint mellom i og j
+        #         if y == x:
+        #             assignment.domains[i].remove(x)
+        #     # if assignment.domains[j]:
+        #     # assignment.domains[i].remove(x)
+        #     revised = True
+        return revised
 
 def create_map_coloring_csp():
     """Instantiate a CSP representing the map coloring problem from the
@@ -200,3 +294,15 @@ def print_sudoku_solution(solution):
         print
         if row == 2 or row == 5:
             print '------+-------+------'
+
+
+def main():
+    csp = create_map_coloring_csp()
+    # print csp.constraints
+    # csp.inference(csp, csp.get_all_arcs())
+    # print csp.domains['WA']
+    print csp.backtracking_search()
+    sudoku = create_sudoku_csp("../sudokus/veryhard.txt")
+
+    print_sudoku_solution(sudoku.backtracking_search())
+main()
