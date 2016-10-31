@@ -15,6 +15,7 @@ class CSP:
         # the variable pair (i, j)
         self.constraints = {}
         self.recursion = 0
+        self.failed = 0
 
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
@@ -111,8 +112,10 @@ class CSP:
         iterations of the loop.
         """
         # TODO: IMPLEMENT THIS
+        # Counter for counting how many times backtrack is called
         self.recursion += 1
-        print self.recursion
+
+        # Check if all the variables in 'assignment' have lists of length one
         complete = True
         for value in assignment:
             if len(assignment[value]) != 1:
@@ -120,21 +123,35 @@ class CSP:
         if complete:
             return assignment
 
+        # Function for selecting a variable with a domain size greater than 1
         var = self.select_unassigned_variable(assignment)
 
+        # For each value of the possible values of var
         for value in assignment[var]:
+            # Create a deep copy of assignment
             assignment2 = copy.deepcopy(assignment)
-            assignment2[var] = [value]
 
+            # Adds var = value to the assignment
+            assignment2[var] = value
+
+            # Checks if value is consistent with assignment
             if value in self.domains[var]:
-                # assignment[var].append(value)
+
+                # Calls AC-3 as inference to check for arc consistency
                 inferences = self.inference(assignment2, self.get_all_arcs())
+
+                # If the inference is not failure
                 if inferences:
-                    # assignment.append(inferences)
+
+                    # Recursive call to backtrack with reevaluated assignment
                     result = self.backtrack(assignment2)
+
+                    # Return the result if it is complete
                     if result is not False:
                         return result
-            # assignment.remove(value)
+
+        # Counter for how many times the recursion fails
+        self.failed += 1
         return False
 
     def select_unassigned_variable(self, assignment):
@@ -144,7 +161,7 @@ class CSP:
         of legal values has a length greater than one.
         """
         # TODO: IMPLEMENT THIS
-        # print assignment
+        # Returns a variable that has a domain size greater than one
         for value in assignment:
             if len(assignment[value]) > 1:
                 return value
@@ -157,38 +174,24 @@ class CSP:
         is the initial queue of arcs that should be visited.
         """
         # TODO: IMPLEMENT THIS
-        # print "Domain: ", assignment.domains
-        # print assignment
-        # print "Queue: ", queue
-
-        # while queue:
-        #     i, j = queue.pop(0)
-        #     print "I, J: ", i, j
-        #     print "Pairs: ", self.get_all_possible_pairs(assignment.domains[i], assignment.domains[j])
-        #     print "Neighbouring arcs i: ", self.get_all_neighboring_arcs(i)
-        #     print "Neighbouring arcs j: ", self.get_all_neighboring_arcs(j)
+        # The AC-3 algorithm that removes the elements that cause arc inconsistency
+        # While the queue is not empty
         while queue:
+            # Takes the first element of the queue and saves it as i and j
             i, j = queue.pop(0)
-            # print self.get_all_possible_pairs(i,j)
-            # print "i, j: ", i, j
+
+            # If the revise function changes anything
             if self.revise(assignment, i, j):
-                # print "asdasda"
+
+                # If the domain of i is empty the search has failed
                 if len(assignment[i]) == 0:
                     return False
 
-
+                # Adds all neighbours of Xi except for Xj to the queue
                 for k in self.get_all_neighboring_arcs(i):
-                    # print "Neighbour", k
-                    # print "asd"
-                    print self.get_all_neighboring_arcs(i)
                     if k == (i, j):
                         continue
                     queue.append(k)
-                    # for a in range(len(k)):
-                    #     if k[a] == j or k[a] == i:
-                    #         continue
-                    #     queue.append(k)
-                    #     print k
         return True
 
 
@@ -202,39 +205,27 @@ class CSP:
         legal values in 'assignment'.
         """
         # TODO: IMPLEMENT THIS
+        # Revise function to check for arc consistency, and removes illegal values
         revised = False
-
-        # print "Constraints i: ", assignment.constraints[i][j]
         for x in assignment[i]:
             satisfied = False
+
+            # The for loop check if there is a value y in Dj that satisfy the constraint
+            # between Xi and Xj
             for y in assignment[j]:
-                # print (x, y)
+
+                # If (x, y) is in the constraints between Xi and Xj the constraint is
+                # satisfied and does not need to be changed
                 if (x, y) in self.constraints[i][j]:
                     satisfied = True
-                    # print "test", (x, y)
-                    # assignment.domains[i].remove(x)
-                    # revised = True
                     break
+            # If the constraint cannot be satisfied, remove the element causing
+            # inconsistency
             if not satisfied:
                 revised = True
                 assignment[i].remove(x)
-
-
-
-        # print assignment.domains[i]
-        #         print "y", assignment.domains[i]
-        #     print "x", assignment.domains[i]
-        # print assignment.domains[i]
-        # print "Constraints: ", self.constraints
-        # for x in assignment.domains[i]:
-        #     for y in assignment.domains[j]:
-        #         # Hvis det ikke finnes en y i assignment.domains[j] som tilfredstiller constraint mellom i og j
-        #         if y == x:
-        #             assignment.domains[i].remove(x)
-        #     # if assignment.domains[j]:
-        #     # assignment.domains[i].remove(x)
-        #     revised = True
         return revised
+
 
 def create_map_coloring_csp():
     """Instantiate a CSP representing the map coloring problem from the
@@ -301,8 +292,9 @@ def main():
     # print csp.constraints
     # csp.inference(csp, csp.get_all_arcs())
     # print csp.domains['WA']
-    print csp.backtracking_search()
-    sudoku = create_sudoku_csp("../sudokus/veryhard.txt")
-
+    # print csp.backtracking_search()
+    sudoku = create_sudoku_csp("../sudokus/hard.txt")
     print_sudoku_solution(sudoku.backtracking_search())
+    print "Number of recursions: ", sudoku.recursion
+    print "Recursion failed: ", sudoku.failed
 main()
