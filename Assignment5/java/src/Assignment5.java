@@ -136,7 +136,7 @@ public class Assignment5 {
 				}
 			}
 		}
-
+ 
 		/**
 		 * Add an Alldiff constraint between all of the variables in the list
 		 * 'variables'.
